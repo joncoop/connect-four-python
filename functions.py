@@ -1,8 +1,8 @@
 NUM_ROWS = 6
 NUM_COLS = 7
-EMPTY = 0
-RED = 1
-BLACK = 2
+EMPTY = '-'
+RED = 'X'
+BLACK = 'O'
 
 
 def make_board():
@@ -16,6 +16,10 @@ def make_board():
 
 
 def display_board(board):
+    for i in range(1, NUM_COLS + 1):
+        print(f"{i} ", end='')
+    print()
+
     for row in board:
         for value in row:
             print(value, end=' ')
@@ -45,11 +49,11 @@ def drop_piece(board, column, piece):
     return row
         
 
-def check_for_streak(slice, piece):
+def check_for_streak(section, piece):
     streak = [piece] * 4
 
-    for i in range(len(slice) - 3):
-        chunk = slice[i: i + 4]
+    for i in range(len(section) - 3):
+        chunk = section[i: i + 4]
 
         if chunk == streak:
             return True
@@ -71,14 +75,14 @@ def get_left_diagonal_slice(board, row, column):
         row -= 1
         column -= 1
 
-    slice = []
+    section = []
 
     while row < NUM_ROWS and column < NUM_COLS:
-        slice.append(board[row][column])
+        section.append(board[row][column])
         row += 1
         column += 1
 
-    return slice
+    return section
 
 
 def get_right_diagonal_slice(board, row, column):
@@ -87,14 +91,14 @@ def get_right_diagonal_slice(board, row, column):
         row -= 1
         column += 1
 
-    slice = []
+    section = []
 
     while row < NUM_ROWS and column >= 0:
-        slice.append(board[row][column])
+        section.append(board[row][column])
         row += 1
         column -= 1
 
-    return slice
+    return section
 
 
 def check_win(board, row, column):
@@ -116,7 +120,7 @@ def check_win(board, row, column):
 def board_full(board):
     for row in board:
         for column in row:
-            if row[column] == EMPTY:
+            if column == EMPTY:
                 return False
 
     return True
