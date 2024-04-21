@@ -2,8 +2,8 @@ import functions
 
 
 # Board size (Up to 99x99)
-WIDTH = 7
-HEIGHT = 6
+WIDTH = 30
+HEIGHT = 20
 
 # How many in a row
 STREAK_LENGTH = 4
@@ -37,10 +37,6 @@ def play_again():
 
 
 def display_board(board):
-    for i in range(1, WIDTH + 1):
-        print(i, end=' ')
-    print()
-
     for row in board:
         for value in row:
             if value == 1:
@@ -50,7 +46,24 @@ def display_board(board):
             else:
                 marker = EMPTY
 
-            print(marker, end=' ')
+            print(f"{marker} ", end='')
+        print()
+
+    print('_' * (2 * WIDTH - 1))
+
+    for i in range(1, WIDTH + 1):
+        if i < 10:
+            print(f"{i} ", end='')
+        else:
+            print(f"{i // 10} ", end='')
+    print()
+
+    if WIDTH > 9:
+        for i in range(1, WIDTH + 1):
+            if i < 10:
+                print(f"  ", end='')
+            else:
+                print(f"{i % 10} ", end='')
         print()
 
 
