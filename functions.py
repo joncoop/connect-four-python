@@ -1,37 +1,20 @@
-NUM_ROWS = 6
-NUM_COLS = 7
-EMPTY = '-'
-RED = 'X'
-BLACK = 'O'
+# Functions for a Connect 4 game
 
-
-def make_board():
+def make_board(width=7, height=6):
     board = []
 
-    for _ in range(NUM_ROWS):
-        row = [EMPTY] * NUM_COLS
+    for _ in range(height):
+        row = [0] * width
         board.append(row)
 
     return board
-
-
-def display_board(board):
-    for i in range(1, NUM_COLS + 1):
-        print(f"{i} ", end='')
-    print()
-
-    for row in board:
-        for value in row:
-            print(value, end=' ')
-        print()
-
 
 def place_piece(board, piece, row, column):
     board[row][column] = piece
 
    
 def location_empty(board, row, column):
-    return board[row][column] == EMPTY
+    return board[row][column] == 0
 
 
 def column_available(board, column):
@@ -39,7 +22,7 @@ def column_available(board, column):
 
    
 def drop_piece(board, column, piece):
-    row = NUM_ROWS - 1
+    row = len(board) - 1
     
     while not location_empty(board, row, column):
         row -= 1
@@ -49,11 +32,11 @@ def drop_piece(board, column, piece):
     return row
         
 
-def check_for_streak(section, piece):
-    streak = [piece] * 4
+def has_streak(section, piece, length):
+    streak = [piece] * length
 
-    for i in range(len(section) - 3):
-        chunk = section[i: i + 4]
+    for i in range(len(section)):
+        chunk = section[i: i + length]
 
         if chunk == streak:
             return True
@@ -77,7 +60,7 @@ def get_left_diagonal_slice(board, row, column):
 
     section = []
 
-    while row < NUM_ROWS and column < NUM_COLS:
+    while row < len(board) and column < len(board[0]):
         section.append(board[row][column])
         row += 1
         column += 1
@@ -87,13 +70,13 @@ def get_left_diagonal_slice(board, row, column):
 
 def get_right_diagonal_slice(board, row, column):
     # adjust row and column to starting location
-    while row > 0 and column < NUM_COLS - 1:
+    while row > 0 and column < len(board[0]) - 1:
         row -= 1
         column += 1
 
     section = []
 
-    while row < NUM_ROWS and column >= 0:
+    while row < len(board) and column >= 0:
         section.append(board[row][column])
         row += 1
         column -= 1
@@ -101,7 +84,7 @@ def get_right_diagonal_slice(board, row, column):
     return section
 
 
-def check_win(board, row, column):
+def check_win(board, row, column, length=4):
     piece = board[row][column]
     
     horizontal = get_horizontal_slice(board, row)
@@ -109,10 +92,10 @@ def check_win(board, row, column):
     left_diagonal = get_left_diagonal_slice(board, row, column)
     right_diagonal = get_right_diagonal_slice(board, row, column)
 
-    horizontal_win = check_for_streak(horizontal, piece)
-    vertical_win = check_for_streak(vertical, piece)
-    left_diagonal_win = check_for_streak(left_diagonal, piece)
-    right_diagonal_win = check_for_streak(right_diagonal, piece)
+    horizontal_win = has_streak(horizontal, piece, length)
+    vertical_win = has_streak(vertical, piece, length)
+    left_diagonal_win = has_streak(left_diagonal, piece, length)
+    right_diagonal_win = has_streak(right_diagonal, piece, length)
 
     return horizontal_win or vertical_win or left_diagonal_win or right_diagonal_win
 
@@ -120,93 +103,7 @@ def check_win(board, row, column):
 def board_full(board):
     for row in board:
         for column in row:
-            if column == EMPTY:
+            if column == 0:
                 return False
 
     return True
-
-
-def do_tests():
-    print('Make board')
-    board = make_board()
-    print(board)
-    display_board(board)
-    print()
-
-    print('Place_piece')
-    place_piece(board, RED, 5, 1)
-    display_board(board)
-    print()
-
-    place_piece(board, BLACK, 4, 1)
-    place_piece(board, RED, 3, 1)
-    place_piece(board, BLACK, 2, 1)
-    place_piece(board, RED, 5, 2)
-    place_piece(board, BLACK, 4, 2)
-    place_piece(board, RED, 3, 2)
-    place_piece(board, BLACK, 2, 2)
-    place_piece(board, RED, 1, 2)
-    place_piece(board, BLACK, 0, 2)
-    display_board(board)
-    print()
-    
-    print('Location empty')
-    print(location_empty(board, 0, 0))
-    print(location_empty(board, 3, 1))
-    print()
-
-    print('Column available')    
-    print(column_available(board, 0))
-    print(column_available(board, 1))
-    print(column_available(board, 2))
-    print()
-
-    print('Drop piece')    
-    print(drop_piece(board, 0, RED))
-    print(drop_piece(board, 1, BLACK))
-    display_board(board)
-    print()
-
-    print('Check for streak')
-    print(check_for_streak([RED, RED, RED, RED, EMPTY, EMPTY, EMPTY], RED))
-    print(check_for_streak([EMPTY, RED, RED, RED, RED, EMPTY, EMPTY], RED))
-    print(check_for_streak([EMPTY, EMPTY, RED, RED, RED, RED, EMPTY], RED))
-    print(check_for_streak([EMPTY, EMPTY, EMPTY, RED, RED, RED, RED], RED))
-    print(check_for_streak([EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY], RED))
-    print(check_for_streak([EMPTY, RED, BLACK, RED, RED, EMPTY, EMPTY], RED))
-    print()
-
-    print('Get horizontal slice')
-    print(get_horizontal_slice(board, 0))
-    print(get_horizontal_slice(board, 1))
-    print(get_horizontal_slice(board, 5))
-    print()
-    
-    print('Get vertical slice')
-    print(get_vertical_slice(board, 0))
-    print(get_vertical_slice(board, 1))
-    print(get_vertical_slice(board, 5))
-    print()
-
-    print('Get left diagonal slice')
-    print(get_left_diagonal_slice(board, 0, 0))
-    print(get_left_diagonal_slice(board, 0, 1))
-    print(get_left_diagonal_slice(board, 0, 2))
-    print(get_left_diagonal_slice(board, 0, 3))
-    print(get_left_diagonal_slice(board, 0, 4))
-    print(get_left_diagonal_slice(board, 0, 5))
-    print(get_left_diagonal_slice(board, 0, 6))
-    print(get_left_diagonal_slice(board, 1, 0))
-    print(get_left_diagonal_slice(board, 3, 5))
-    print(get_left_diagonal_slice(board, 5, 6))
-    print()
-
-    print('Get right diagonal slice')
-    print(get_right_diagonal_slice(board, 5, 2))
-    print(get_right_diagonal_slice(board, 1, 1))
-    print(get_right_diagonal_slice(board, 0, 6))
-    print(get_right_diagonal_slice(board, 2, 3))
-
-
-if __name__ == '__main__':
-    do_tests()
