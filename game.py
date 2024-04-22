@@ -2,16 +2,16 @@ import functions
 
 
 # Board size (Up to 99x99)
-WIDTH = 30
-HEIGHT = 20
+WIDTH = 7
+HEIGHT = 6
 
 # How many in a row
-STREAK_LENGTH = 4
+STREAK_LENGTH = 6
 
-# Markers
+# TOKENs
 EMPTY = '-'
-P1_MARKER = 'X'
-P2_MARKER = 'O'
+P1_TOKEN = 'X'
+P2_TOKEN = 'O'
 
 
 def show_start_screen():
@@ -23,6 +23,10 @@ def show_start_screen():
     print("*                            *")
     print("******************************")
     input()
+
+
+def show_end_screen():
+    print("Thanks for playing!")
 
 
 def play_again():
@@ -40,13 +44,13 @@ def display_board(board):
     for row in board:
         for value in row:
             if value == 1:
-                marker = P1_MARKER
+                TOKEN = P1_TOKEN
             elif value == 2:
-                marker = P2_MARKER
+                TOKEN = P2_TOKEN
             else:
-                marker = EMPTY
+                TOKEN = EMPTY
 
-            print(f"{marker} ", end='')
+            print(f"{TOKEN} ", end='')
         print()
 
     print('_' * (2 * WIDTH - 1))
@@ -91,20 +95,22 @@ def play():
     while playing:
         current_player = turn + 1
         column = get_drop_column(board, current_player)
-        row = functions.drop_piece(board, column, current_player)
+        row = functions.drop_token(board, column, current_player)
 
         print()
         display_board(board)
 
         if functions.check_win(board, row, column, STREAK_LENGTH):
-            print(f"\nPlayer {current_player} wins!")
+            result = f"Player {current_player} wins!"
             playing = False
         elif functions.board_full(board):
-            print("\nIt's a tie.")
+            result = "It's a tie."
             playing = False
         else:
             turn = (turn + 1) % 2
     
+    print(f"\n{result}")
+
 
 def main():
     show_start_screen()
@@ -116,6 +122,8 @@ def main():
         print()
         running = play_again()
         print()
+
+    show_end_screen()
 
 
 if  __name__ == '__main__':

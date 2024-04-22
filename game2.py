@@ -9,10 +9,10 @@ HEIGHT = 6
 # How many in a row (Not used yet)
 STREAK_LENGTH = 4
 
-# Marker colors
+# Token colors
 EMPTY = pygame.Color('white')
-P1_MARKER = pygame.Color('red')
-P2_MARKER = pygame.Color('yellow')
+P1_TOKEN = pygame.Color('red')
+P2_TOKEN = pygame.Color('yellow')
 PLAYER_NAMES = ['Red', 'Yellow']
 
 # Screen settings
@@ -53,7 +53,7 @@ def show_start_screen():
     message_rect = message_text.get_rect()
     message_rect.midtop = SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 8
     
-    screen.fill(pygame.Color('blue'))
+    screen.fill(pygame.Color('cyan3'))
     screen.blit(title_text, title_rect)
     screen.blit(number_text, number_rect)
     screen.blit(message_text, message_rect)
@@ -68,9 +68,9 @@ def display_board(board):
             radius = 40
 
             if value == 1:
-                color = P1_MARKER
+                color = P1_TOKEN
             elif value == 2:
-                color = P2_MARKER
+                color = P2_TOKEN
             else:
                 color = EMPTY
 
@@ -85,15 +85,14 @@ def display_status(message):
     screen.blit(message_text, message_rect)
 
 
-def get_drop_column(board, events):
-    for event in events:
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            x, y = pygame.mouse.get_pos()
-            if y < SCREEN_HEIGHT - 100:
-                column = x // 100
+def get_drop_column(board, event):
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        x, y = pygame.mouse.get_pos()
+        if y < SCREEN_HEIGHT - 100: # out of status area
+            column = x // 100
 
-            if 0 <= column < len(board[0]) and functions.column_available(board, column):
-                return column
+        if 0 <= column < len(board[0]) and functions.column_available(board, column):
+            return column
     
             
 def new_game():
@@ -103,43 +102,50 @@ def new_game():
     return board, turn
 
 
-def play_again(events):
-    for event in events:
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_y:
-                return True
-            elif event.key == pygame.K_n:
-                return False
+def play_again(event):
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_y:
+            return True
+        elif event.key == pygame.K_n:
+            return False
             
  
 def run():
     scene = START
     running = True
     message = ''
+    board, turn = new_game()
 
     while running:
         # Input
-        filtered_events = []
+        column = None
+        again = None
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and scene == START:
+
+            if scene == START and event.type == pygame.MOUSEBUTTONDOWN:
+                scene = PLAYING
+            elif scene == PLAYING:
+                column = get_drop_column(board, event)
+            elif scene == END:
+                again = play_again(event)
+                
+                if again == True:
                     board, turn = new_game()
                     scene = PLAYING
-            else:
-                filtered_events.append(event)
-        
+                elif again == False: # can't say 'not again' because None is 'falsy'
+                    running = False
+
         #Logic
         if scene == PLAYING:
             current_player = turn + 1
             name = PLAYER_NAMES[turn]
             message = f"Which column, {name}?"
 
-            column = get_drop_column(board, filtered_events)
-
             if column is not None:
-                row = functions.drop_piece(board, column, current_player)
+                row = functions.drop_token(board, column, current_player)
 
                 if functions.check_win(board, row, column):
                     message = f"{name} wins! Play again? (y/n)"
@@ -150,15 +156,6 @@ def run():
                 else:
                     turn = (turn + 1) % 2
 
-        elif scene == END:
-            again = play_again(filtered_events)
-
-            if again == True:
-                board, turn = new_game()
-                scene = PLAYING
-            elif again == False:
-                running = False
-
 
         # Drawing
         screen.fill(pygame.Color('black'))
@@ -167,8 +164,7 @@ def run():
             show_start_screen()
         else:
             display_board(board)
-        
-        display_status(message)
+            display_status(message)
 
         pygame.display.update()
         clock.tick(FPS)
