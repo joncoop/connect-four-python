@@ -101,9 +101,10 @@ def check_win(board, row, column, length=4):
 
 
 def board_full(board):
-    for row in board:
-        for column in row:
-            if column == 0:
-                return False
+    num_columns = len(board[0])
+
+    for column in range(num_columns):
+        if column_available(board, column):
+            return False
 
     return True
