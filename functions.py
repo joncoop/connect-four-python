@@ -54,9 +54,9 @@ def get_column(board, column):
 
 def get_left_diagonal(board, row, column):
     # adjust row and column to starting location
-    while row > 0 and column > 0:
-        row -= 1
-        column -= 1
+    distance_to_edge = min(row, column)
+    row -= distance_to_edge
+    column -= distance_to_edge
 
     diagonal = []
 
@@ -70,9 +70,9 @@ def get_left_diagonal(board, row, column):
 
 def get_right_diagonal(board, row, column):
     # adjust row and column to starting location
-    while row > 0 and column < len(board[0]) - 1:
-        row -= 1
-        column += 1
+    distance_to_edge = min(row, len(board[0]) - column - 1)
+    row -= distance_to_edge
+    column += distance_to_edge
 
     diagonal = []
 
