@@ -4,11 +4,11 @@
 EMPTY = None
 
 
-def make_board(width=7, height=6):
+def make_board(num_columns=7, num_rows=6):
     board = []
 
-    for _ in range(height):
-        row = [EMPTY] * width
+    for _ in range(num_rows):
+        row = [EMPTY] * num_columns
         board.append(row)
 
     return board
@@ -39,14 +39,16 @@ def drop_disc(board, column, disc):
         
 
 def has_streak(sequence, value, length):
-    streak = [value] * length
+    count = 0
 
-    for i in range(len(sequence)):
-        chunk = sequence[i: i + length]
-
-        if chunk == streak:
-            return True
-
+    for item in sequence:
+        if item == value:
+            count += 1
+            if count == length:
+                return True
+        else:
+            count = 0
+            
     return False
 
 
@@ -59,7 +61,6 @@ def get_column(board, column):
 
 
 def get_left_diagonal(board, row, column):
-    # adjust row and column to starting location
     distance_to_edge = min(row, column)
     row -= distance_to_edge
     column -= distance_to_edge
@@ -75,7 +76,6 @@ def get_left_diagonal(board, row, column):
 
 
 def get_right_diagonal(board, row, column):
-    # adjust row and column to starting location
     distance_to_edge = min(row, len(board[0]) - column - 1)
     row -= distance_to_edge
     column += distance_to_edge
