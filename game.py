@@ -8,28 +8,29 @@ HEIGHT = 6
 # How many in a row
 STREAK_LENGTH = 4
 
-# Tokens
-TOKENS = 'X', 'O'
+# Disc symbols
+DISCS = 'X', 'O'
+BLANK = '-'
 
 
 def show_start_screen():
-    print("******************************")
-    print("*                            *")
-    print(f"*         CONNECT 4         *")
-    print("*                            *")
-    print("*    Press ENTER to play.    *")
-    print("*                            *")
-    print("******************************")
+    print('******************************')
+    print('*                            *')
+    print('*         CONNECT 4          *')
+    print('*                            *')
+    print('*    Press ENTER to play.    *')
+    print('*                            *')
+    print('******************************')
     input()
 
 
 def show_end_screen():
-    print("Thanks for playing!")
+    print('Thanks for playing!')
 
 
 def play_again():
     while True:
-        answer = input("Would you like to play again? (y/n)? ")
+        answer = input('Would you like to play again? (y/n)? ')
         answer = answer.lower().strip()
         
         if answer in ['y', 'yes']:
@@ -39,38 +40,42 @@ def play_again():
 
 
 def display_board(board):
-    blank = '-'
-
     for row in board:
         for value in row:
-            if value in TOKENS:
+            if value in DISCS:
                 print(value, end=' ')
             else:
-                print(blank, end=' ')
+                print(BLANK, end=' ')
 
         print()
 
-    print('_' * (2 * WIDTH - 1))
+    print('—' * (2 * len(board[0]) - 1))
 
-    for i in range(1, WIDTH + 1):
+    display_column_numbers(board)
+
+
+def display_column_numbers(board):
+    width = len(board[0])
+
+    for i in range(1, width + 1):
         if i < 10:
-            print(f"{i} ", end='')
+            print(f'{i}', end=' ')
         else:
-            print(f"{i // 10} ", end='')
+            print(f'{i // 10}', end=' ')
     print()
 
-    if WIDTH > 9:
-        for i in range(1, WIDTH + 1):
+    if width > 9:
+        for i in range(1, width + 1):
             if i < 10:
-                print(f"  ", end='')
+                print(f' ', end=' ')
             else:
-                print(f"{i % 10} ", end='')
+                print(f'{i % 10}', end=' ')
         print()
 
 
 def get_drop_column(board, player):
     while True:
-        column = input(f"Where to drop, {player}? ")
+        column = input(f'Where to drop, {player}? ')
         column = column.strip()
         
         if column.isdigit():
@@ -79,7 +84,7 @@ def get_drop_column(board, player):
             if 0 <= column < len(board[0]) and functions.column_available(board, column):
                 return column
         
-        print("Invalid selection.")
+        print('Invalid selection.')
 
 
 def play():
@@ -90,15 +95,15 @@ def play():
     display_board(board)
 
     while playing:
-        current_token = TOKENS[turn]
-        column = get_drop_column(board, current_token)
-        row = functions.drop_token(board, column, current_token)
+        current_disc = DISCS[turn]
+        column = get_drop_column(board, current_disc)
+        row = functions.drop_disc(board, column, current_disc)
 
         print()
         display_board(board)
 
         if functions.check_win(board, row, column, STREAK_LENGTH):
-            result = f"{current_token} wins!"
+            result = f'{current_disc} wins!'
             playing = False
         elif functions.board_full(board):
             result = "It's a tie."
@@ -106,7 +111,7 @@ def play():
         else:
             turn = (turn + 1) % 2
     
-    print(f"\n{result}")
+    print(f'\n{result}')
 
 
 def main():

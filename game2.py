@@ -2,6 +2,18 @@
 import pygame
 import functions
 
+# Screen settings
+CAPTION = 'Connect 4'
+SCREEN_WIDTH = 700
+SCREEN_HEIGHT = 700
+FPS = 60
+
+# Initialize pygame and make window
+pygame.init()
+screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
+pygame.display.set_caption(CAPTION)
+clock = pygame.time.Clock()
+
 # Board size (Not flexible yet)
 WIDTH = 7
 HEIGHT = 6
@@ -9,35 +21,24 @@ HEIGHT = 6
 # How many in a row (Not used yet)
 STREAK_LENGTH = 4
 
-# Token colors
-EMPTY = pygame.Color('white')
-P1_TOKEN = pygame.Color('red')
-P2_TOKEN = pygame.Color('yellow')
+# Player info
 PLAYER_NAMES = ['Red', 'Yellow']
+P1_COLOR = pygame.Color('red')
+P2_COLOR = pygame.Color('yellow')
 
-# Screen settings
-TITLE = 'Connect 4'
-SCREEN_WIDTH = 700
-SCREEN_HEIGHT = 700
-FPS = 60
+# Colors
+BOARD_COLOR = pygame.Color('blue')
+EMPTY_COLOR = pygame.Color('white')
+
+# Fonts
+FONT_LG = pygame.font.Font(None, 208)
+FONT_MD = pygame.font.Font(None, 128)
+FONT_SM = pygame.font.Font(None, 42)
 
 # Scenes
 START = 0
 PLAYING = 1
 END = 2
-
-# Initialize pygame and make window
-pygame.mixer.pre_init()
-pygame.init()
-
-screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-pygame.display.set_caption(TITLE)
-clock = pygame.time.Clock()
-
-# Load assets
-FONT_LG = pygame.font.Font(None, 208)
-FONT_MD = pygame.font.Font(None, 128)
-FONT_SM = pygame.font.Font(None, 42)
 
 
 def show_start_screen():
@@ -60,19 +61,19 @@ def show_start_screen():
 
 
 def display_board(board):
-    pygame.draw.rect(screen, pygame.Color('blue'), [0, 0, 700, 600])
+    pygame.draw.rect(screen, BOARD_COLOR, [0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 100])
 
     for y, row in enumerate(board):
         for x, value in enumerate(row):
             center = [100 * x + 50, 100 * y + 50]
             radius = 40
 
-            if value == 1:
-                color = P1_TOKEN
-            elif value == 2:
-                color = P2_TOKEN
+            if value == 0:
+                color = P1_COLOR
+            elif value == 1:
+                color = P2_COLOR
             else:
-                color = EMPTY
+                color = EMPTY_COLOR
 
             pygame.draw.circle(screen, color, center, radius)
 
@@ -93,6 +94,8 @@ def get_drop_column(board, event):
 
         if 0 <= column < len(board[0]) and functions.column_available(board, column):
             return column
+        
+    return None
     
             
 def new_game():
@@ -108,7 +111,9 @@ def play_again(event):
             return True
         elif event.key == pygame.K_n:
             return False
-            
+    
+    return None
+
  
 def run():
     scene = START
@@ -131,21 +136,15 @@ def run():
                 column = get_drop_column(board, event)
             elif scene == END:
                 again = play_again(event)
+                break # otherwise again gets flipped back to None as other events are processed
                 
-                if again == True:
-                    board, turn = new_game()
-                    scene = PLAYING
-                elif again == False: # can't say 'not again' because None is 'falsy'
-                    running = False
-
         #Logic
         if scene == PLAYING:
-            current_player = turn + 1
             name = PLAYER_NAMES[turn]
             message = f"Which column, {name}?"
 
             if column is not None:
-                row = functions.drop_token(board, column, current_player)
+                row = functions.drop_disc(board, column, turn)
 
                 if functions.check_win(board, row, column):
                     message = f"{name} wins! Play again? (y/n)"
@@ -155,6 +154,13 @@ def run():
                     scene = END
                 else:
                     turn = (turn + 1) % 2
+
+        elif scene == END:
+            if again == True:
+                board, turn = new_game()
+                scene = PLAYING
+            elif again == False: # Can't use 'else' or say 'not again' because None is falsy
+                running = False
 
 
         # Drawing

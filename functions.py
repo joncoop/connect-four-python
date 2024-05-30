@@ -14,8 +14,8 @@ def make_board(width=7, height=6):
     return board
 
 
-def place_token(board, row, column, token):
-    board[row][column] = token
+def place_disc(board, row, column, disc):
+    board[row][column] = disc
 
    
 def location_empty(board, row, column):
@@ -26,14 +26,14 @@ def column_available(board, column):
     return location_empty(board, 0, column)
 
    
-def drop_token(board, column, token):
+def drop_disc(board, column, disc):
     row = len(board) - 1
     
     while not location_empty(board, row, column):
         row -= 1
 
     if row >= 0:
-        place_token(board, row, column, token)
+        place_disc(board, row, column, disc)
 
     return row
         
@@ -90,18 +90,18 @@ def get_right_diagonal(board, row, column):
     return diagonal
 
 
-def check_win(board, row, column, length=4):
-    token = board[row][column]
+def check_win(board, row, column, streak_length=4):
+    disc = board[row][column]
     
     horizontal = get_row(board, row)
     vertical = get_column(board, column)
     left_diagonal = get_left_diagonal(board, row, column)
     right_diagonal = get_right_diagonal(board, row, column)
 
-    horizontal_win = has_streak(horizontal, token, length)
-    vertical_win = has_streak(vertical, token, length)
-    left_diagonal_win = has_streak(left_diagonal, token, length)
-    right_diagonal_win = has_streak(right_diagonal, token, length)
+    horizontal_win = has_streak(horizontal, disc, streak_length)
+    vertical_win = has_streak(vertical, disc, streak_length)
+    left_diagonal_win = has_streak(left_diagonal, disc, streak_length)
+    right_diagonal_win = has_streak(right_diagonal, disc, streak_length)
 
     return horizontal_win or vertical_win or left_diagonal_win or right_diagonal_win
 
