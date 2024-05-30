@@ -1,182 +1,211 @@
-# Imports
+# Standard library imports
+
+
+# Third-party imports
 import pygame
+
+
+# Local imports
 import functions
 
-# Screen settings
-CAPTION = 'Connect 4'
-SCREEN_WIDTH = 700
-SCREEN_HEIGHT = 700
-FPS = 60
 
-# Initialize pygame and make window
-pygame.init()
-screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-pygame.display.set_caption(CAPTION)
-clock = pygame.time.Clock()
+# Game configuration
+class Config:
 
-# Board size (Not flexible yet)
-WIDTH = 7
-HEIGHT = 6
+    # Screen settings
+    CAPTION = 'Connect 4'
+    SCREEN_WIDTH = 700
+    SCREEN_HEIGHT = 700
+    FPS = 60
 
-# How many in a row (Not used yet)
-STREAK_LENGTH = 4
+    # Board size (Not flexible yet)
+    NUM_COLUMNS = 7
+    NUM_ROWS = 6
 
-# Player info
-PLAYER_NAMES = ['Red', 'Yellow']
-P1_COLOR = pygame.Color('red')
-P2_COLOR = pygame.Color('yellow')
+    # How many in a row (Not used yet)
+    STREAK_LENGTH = 4
 
-# Colors
-BOARD_COLOR = pygame.Color('blue')
-EMPTY_COLOR = pygame.Color('white')
+    # Disc names
+    DISCS = ['Red', 'Yellow']
 
-# Fonts
-FONT_LG = pygame.font.Font(None, 208)
-FONT_MD = pygame.font.Font(None, 128)
-FONT_SM = pygame.font.Font(None, 42)
+    # Board colors
+    BG_COLOR = pygame.Color('black')
+    DISC1_COLOR = pygame.Color('red')
+    DISC2_COLOR = pygame.Color('yellow')
+    BOARD_COLOR = pygame.Color('blue')
+    EMPTY_COLOR = pygame.Color('white')
+    TEXT_COLOR = pygame.Color('white')
 
-# Scenes
-START = 0
-PLAYING = 1
-END = 2
+    # Fonts
+    FONT_FAMILY_SMALL, FONT_SIZE_SMALL = None, 42
+    FONT_FAMILY_MEDIUM, FONT_SIZE_MEDIUM = None, 128
+    FONT_FAMILY_LARGE, FONT_SIZE_LARGE = None, 208
+
+    # Scenes
+    START = 0
+    PLAYING = 1
+    END = 2
 
 
-def show_start_screen():
-    title_text = FONT_MD.render('Connect', True, pygame.Color('white'))
-    title_rect = title_text.get_rect()
-    title_rect.midbottom = SCREEN_WIDTH // 2 - 32, SCREEN_HEIGHT // 2 - 8
+# Main game class 
+class Game:
 
-    number_text = FONT_LG.render('4', True, pygame.Color('red'))
-    number_rect = number_text.get_rect()
-    number_rect.midleft = title_rect.midright
+    def __init__(self, columns=Config.NUM_COLUMNS, rows=Config.NUM_ROWS, streak=Config.STREAK_LENGTH):
+        pygame.mixer.pre_init()
+        pygame.init()
 
-    message_text = FONT_SM.render('Click to play', True, pygame.Color('white'))
-    message_rect = message_text.get_rect()
-    message_rect.midtop = SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 8
+        self.screen = pygame.display.set_mode([Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT])
+        pygame.display.set_caption(Config.CAPTION)
+        self.clock = pygame.time.Clock()
+
+        self.columns = columns
+        self.rows = rows
+        self.streak = streak
+
+        self.running = True
+        self.scene = Config.START
+        self.message = ''
+
+        self.load_assets()
+        self.new_game()
+
+    def load_assets(self):
+        self.FONT_SM = pygame.font.Font(Config.FONT_FAMILY_SMALL, Config.FONT_SIZE_SMALL)
+        self.FONT_MD = pygame.font.Font(Config.FONT_FAMILY_MEDIUM, Config.FONT_SIZE_MEDIUM)
+        self.FONT_LG = pygame.font.Font(Config.FONT_FAMILY_LARGE, Config.FONT_SIZE_LARGE)
     
-    screen.fill(pygame.Color('cyan3'))
-    screen.blit(title_text, title_rect)
-    screen.blit(number_text, number_rect)
-    screen.blit(message_text, message_rect)
+    def new_game(self):
+        self.board = functions.make_board(self.columns, self.rows)
+        self.turn = 0
 
+    def show_start_screen(self):
+        title_text = self.FONT_MD.render('Connect', True, pygame.Color('white'))
+        title_rect = title_text.get_rect()
+        title_rect.midbottom = Config.SCREEN_WIDTH // 2 - 32, Config.SCREEN_HEIGHT // 2 - 8
 
-def display_board(board):
-    pygame.draw.rect(screen, BOARD_COLOR, [0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 100])
+        number_text = self.FONT_LG.render('4', True, pygame.Color('red'))
+        number_rect = number_text.get_rect()
+        number_rect.midleft = title_rect.midright
 
-    for y, row in enumerate(board):
-        for x, value in enumerate(row):
-            center = [100 * x + 50, 100 * y + 50]
-            radius = 40
-
-            if value == 0:
-                color = P1_COLOR
-            elif value == 1:
-                color = P2_COLOR
-            else:
-                color = EMPTY_COLOR
-
-            pygame.draw.circle(screen, color, center, radius)
-
-
-def display_status(message):
-    message_text = FONT_SM.render(message, True, pygame.Color('white'))
-    message_rect = message_text.get_rect()
-    message_rect.center = SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50
-
-    screen.blit(message_text, message_rect)
-
-
-def get_drop_column(board, event):
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        x, y = pygame.mouse.get_pos()
-        if y < SCREEN_HEIGHT - 100: # out of status area
-            column = x // 100
-
-        if 0 <= column < len(board[0]) and functions.column_available(board, column):
-            return column
+        instructions_text = self.FONT_SM.render('Click to play', True, pygame.Color('white'))
+        instructions_rect = instructions_text.get_rect()
+        instructions_rect.midtop = Config.SCREEN_WIDTH // 2, Config.SCREEN_HEIGHT // 2 + 8
         
-    return None
-    
-            
-def new_game():
-    board = functions.make_board(WIDTH, HEIGHT)
-    turn = 0
+        self.screen.fill(pygame.Color('cyan3'))
+        self.screen.blit(title_text, title_rect)
+        self.screen.blit(number_text, number_rect)
+        self.screen.blit(instructions_text, instructions_rect)
 
-    return board, turn
+    def display_board(self):
+        pygame.draw.rect(self.screen, Config.BOARD_COLOR, [0, 0, Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT - 100])
 
+        for y, row in enumerate(self.board):
+            for x, value in enumerate(row):
+                center = [100 * x + 50, 100 * y + 50]
+                radius = 40
 
-def play_again(event):
-    if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_y:
-            return True
-        elif event.key == pygame.K_n:
-            return False
-    
-    return None
-
- 
-def run():
-    scene = START
-    running = True
-    message = ''
-    board, turn = new_game()
-
-    while running:
-        # Input
-        column = None
-        again = None
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-            if scene == START and event.type == pygame.MOUSEBUTTONDOWN:
-                scene = PLAYING
-            elif scene == PLAYING:
-                column = get_drop_column(board, event)
-            elif scene == END:
-                again = play_again(event)
-                break # otherwise again gets flipped back to None as other events are processed
-                
-        #Logic
-        if scene == PLAYING:
-            name = PLAYER_NAMES[turn]
-            message = f"Which column, {name}?"
-
-            if column is not None:
-                row = functions.drop_disc(board, column, turn)
-
-                if functions.check_win(board, row, column):
-                    message = f"{name} wins! Play again? (y/n)"
-                    scene = END
-                elif functions.board_full(board):
-                    message = "It's a tie. Play again? (y/n)"
-                    scene = END
+                if value == Config.DISCS[0]:
+                    color = Config.DISC1_COLOR
+                elif value == Config.DISCS[1]:
+                    color = Config.DISC2_COLOR
                 else:
-                    turn = (turn + 1) % 2
+                    color = Config.EMPTY_COLOR
 
-        elif scene == END:
-            if again == True:
-                board, turn = new_game()
-                scene = PLAYING
-            elif again == False: # Can't use 'else' or say 'not again' because None is falsy
-                running = False
+                pygame.draw.circle(self.screen, color, center, radius)
+       
+    def display_status(self):
+        message_text = self.FONT_SM.render(self.message, True, Config.TEXT_COLOR)
+        message_rect = message_text.get_rect()
+        message_rect.center = Config.SCREEN_WIDTH // 2, Config.SCREEN_HEIGHT - 50
 
+        self.screen.blit(message_text, message_rect)
 
-        # Drawing
-        screen.fill(pygame.Color('black'))
+    def handle_start_scene(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            self.scene = Config.PLAYING
 
-        if scene == START:
-            show_start_screen()
+    def get_drop_column(self, event):
+        column = -1
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            x, y = pygame.mouse.get_pos()
+
+            if y < Config.SCREEN_HEIGHT - 100: # out of status area
+                column = x // 100
+
+        if event.type == pygame.KEYDOWN:
+            if pygame.K_1 <= event.key <= pygame.K_7:
+                column = event.key - pygame.K_1
+            
+        if 0 <= column < len(self.board[0]) and functions.column_available(self.board, column):
+            return column
+                    
+        return None
+    
+    def handle_playing_scene(self, event):
+        column = self.get_drop_column(event)
+
+        if column is not None:
+            current_disc = Config.DISCS[self.turn]
+            row = functions.drop_disc(self.board, column, current_disc)
+
+            if functions.check_win(self.board, row, column, self.streak):
+                self.message = f"{current_disc} wins! Play again? (y/n)"
+                self.scene = Config.END
+            elif functions.board_full(self.board):
+                self.message = "It's a tie. Play again? (y/n)"
+                self.scene = Config.END
+            else:
+                self.turn = (self.turn + 1) % 2
+    
+    def handle_end_scene(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_y:
+                self.new_game()
+                self.scene = Config.PLAYING
+            if event.key == pygame.K_n:
+                self.running = False
+
+    def process_input(self):
+        events = pygame.event.get()
+
+        for event in events:
+            if event.type == pygame.QUIT:
+                self.running = False
+            elif self.scene == Config.START:
+                self.handle_start_scene(event)
+            elif self.scene == Config.PLAYING:
+                self.handle_playing_scene(event)
+            elif self.scene == Config.END:
+                self.handle_end_scene(event)
+
+    def update(self):
+        if self.scene == Config.PLAYING:
+            name = Config.DISCS[self.turn]
+            self.message = f"Which column, {name}?"
+    
+    def render(self):
+        self.screen.fill(Config.BG_COLOR)
+
+        if self.scene == Config.START:
+            self.show_start_screen()
         else:
-            display_board(board)
-            display_status(message)
+            self.display_board()
+            self.display_status()
 
-        pygame.display.update()
-        clock.tick(FPS)
+    def play(self):
+        while self.running:            
+            self.process_input()     
+            self.update()     
+            self.render()
 
-    pygame.quit()
+            pygame.display.update()
+            self.clock.tick(Config.FPS)
+
+        pygame.quit()
 
 
+# Entry point for the game
 if __name__ == '__main__':
-    run()
+    game = Game()
+    game.play()
