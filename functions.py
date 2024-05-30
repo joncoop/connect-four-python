@@ -1,20 +1,25 @@
 # Functions for a Connect 4 game
 
+#EMPTY = 0
+EMPTY = None
+
+
 def make_board(width=7, height=6):
     board = []
 
     for _ in range(height):
-        row = [0] * width
+        row = [EMPTY] * width
         board.append(row)
 
     return board
 
-def place_token(board, token, row, column):
+
+def place_token(board, row, column, token):
     board[row][column] = token
 
    
 def location_empty(board, row, column):
-    return board[row][column] == 0
+    return board[row][column] == EMPTY
 
 
 def column_available(board, column):
@@ -27,16 +32,17 @@ def drop_token(board, column, token):
     while not location_empty(board, row, column):
         row -= 1
 
-    place_token(board, token, row, column)
+    if row >= 0:
+        place_token(board, row, column, token)
 
     return row
         
 
-def has_streak(section, token, length):
-    streak = [token] * length
+def has_streak(sequence, value, length):
+    streak = [value] * length
 
-    for i in range(len(section)):
-        chunk = section[i: i + length]
+    for i in range(len(sequence)):
+        chunk = sequence[i: i + length]
 
         if chunk == streak:
             return True
@@ -49,7 +55,7 @@ def get_row(board, row):
 
 
 def get_column(board, column):
-    return[row[column] for row in board]
+    return [row[column] for row in board]
 
 
 def get_left_diagonal(board, row, column):

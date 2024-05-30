@@ -6,12 +6,10 @@ WIDTH = 7
 HEIGHT = 6
 
 # How many in a row
-STREAK_LENGTH = 6
+STREAK_LENGTH = 4
 
-# TOKENs
-EMPTY = '-'
-P1_TOKEN = 'X'
-P2_TOKEN = 'O'
+# Tokens
+TOKENS = 'X', 'O'
 
 
 def show_start_screen():
@@ -41,16 +39,15 @@ def play_again():
 
 
 def display_board(board):
+    blank = '-'
+
     for row in board:
         for value in row:
-            if value == 1:
-                TOKEN = P1_TOKEN
-            elif value == 2:
-                TOKEN = P2_TOKEN
+            if value in TOKENS:
+                print(value, end=' ')
             else:
-                TOKEN = EMPTY
+                print(blank, end=' ')
 
-            print(f"{TOKEN} ", end='')
         print()
 
     print('_' * (2 * WIDTH - 1))
@@ -93,15 +90,15 @@ def play():
     display_board(board)
 
     while playing:
-        current_player = turn + 1
-        column = get_drop_column(board, current_player)
-        row = functions.drop_token(board, column, current_player)
+        current_token = TOKENS[turn]
+        column = get_drop_column(board, current_token)
+        row = functions.drop_token(board, column, current_token)
 
         print()
         display_board(board)
 
         if functions.check_win(board, row, column, STREAK_LENGTH):
-            result = f"Player {current_player} wins!"
+            result = f"{current_token} wins!"
             playing = False
         elif functions.board_full(board):
             result = "It's a tie."
