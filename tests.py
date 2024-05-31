@@ -56,6 +56,7 @@ def do_tests():
     print('Drop disc')    
     print(functions.drop_disc(board, 0, 2))
     print(functions.drop_disc(board, 5, 2))
+    print(functions.drop_disc(board, 1, 1))
     print_2d_array(board)
     print()
     
@@ -106,14 +107,15 @@ def do_tests():
     print(functions.check_win(board, 3, 3))
     print(functions.check_win(board, 3, 2))
     print(functions.check_win(board, 3, 1))
-    print(functions.check_win(board, 4, 5)) # weird, but won't be a problem
+    print(functions.check_win(board, 4, 5)) # weird, but easy to fix
     print()
     
     print('Check board full')
     full = [[1, 1, 2], [1, 1, 2], [2, 1, 2]]
-    not_full = [[1, functions.EMPTY, functions.EMPTY], [1, 1, functions.EMPTY], [2, 1, 2]]
+    not_full = [[1, functions.EMPTY, functions.EMPTY], [1, 1, 2], [2, 1, 2]]
     print(functions.board_full(full))
     print(functions.board_full(not_full))
+
 
 if __name__ == '__main__':
     do_tests()

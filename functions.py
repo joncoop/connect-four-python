@@ -27,6 +27,9 @@ def column_available(board, column):
 
    
 def drop_disc(board, column, disc):
+    if not column_available(board, column):
+        return -1
+    
     row = len(board) - 1
     
     while not location_empty(board, row, column):
@@ -35,7 +38,7 @@ def drop_disc(board, column, disc):
     place_disc(board, row, column, disc)
 
     return row
-        
+
 
 def has_streak(sequence, value, length):
     streak = [value] * length
@@ -57,38 +60,47 @@ def get_column(board, column):
 
 
 def get_left_diagonal(board, row, column):
-    distance_to_edge = min(row, column)
-    row -= distance_to_edge
-    column -= distance_to_edge
+    distance_to_top = row
+    distance_to_left_edge = column
+    offset_to_top_left = min(distance_to_top, distance_to_left_edge)
+
+    current_row = row - offset_to_top_left
+    current_column = column - offset_to_top_left
 
     diagonal = []
 
-    while row < len(board) and column < len(board[0]):
-        diagonal.append(board[row][column])
-        row += 1
-        column += 1
+    while current_row < len(board) and current_column < len(board[0]):
+        diagonal.append(board[current_row][current_column])
+        current_row += 1
+        current_column += 1
 
     return diagonal
 
 
 def get_right_diagonal(board, row, column):
-    distance_to_edge = min(row, len(board[0]) - column - 1)
-    row -= distance_to_edge
-    column += distance_to_edge
+    distance_to_top = row
+    distance_to_right_edge = len(board[0]) - column - 1
+    offset_to_top_right = min(distance_to_top, distance_to_right_edge)
+
+    current_row = row - offset_to_top_right
+    current_column = column + offset_to_top_right
 
     diagonal = []
 
-    while row < len(board) and column >= 0:
-        diagonal.append(board[row][column])
-        row += 1
-        column -= 1
+    while current_row < len(board) and current_column >= 0:
+        diagonal.append(board[current_row][current_column])
+        current_row += 1
+        current_column -= 1
 
     return diagonal
 
 
 def check_win(board, row, column, streak_length=4):
     disc = board[row][column]
-    
+
+    if disc == EMPTY:
+        return False
+
     horizontal = get_row(board, row)
     vertical = get_column(board, column)
     left_diagonal = get_left_diagonal(board, row, column)
