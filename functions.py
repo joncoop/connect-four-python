@@ -39,15 +39,12 @@ def drop_disc(board, column, disc):
         
 
 def has_streak(sequence, value, length):
-    count = 0
+    streak = [value] * length
 
-    for item in sequence:
-        if item == value:
-            count += 1
-            if count == length:
-                return True
-        else:
-            count = 0
+    for i in range(len(sequence)):
+        chunk = sequence[i: i + length]
+        if chunk == streak:
+            return True
             
     return False
 
