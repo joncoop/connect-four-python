@@ -2,8 +2,8 @@ import functions
 
 
 # Board size (Up to 99x99)
-NUM_COLUMNS = 7
 NUM_ROWS = 6
+NUM_COLUMNS = 7
 
 # How many in a row
 STREAK_LENGTH = 4
@@ -91,7 +91,7 @@ def play():
     playing = True
     turn = 0
 
-    board = functions.make_board(NUM_COLUMNS, NUM_ROWS)
+    board = functions.make_board(NUM_ROWS, NUM_COLUMNS)
     display_board(board)
 
     while playing:

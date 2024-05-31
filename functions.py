@@ -4,7 +4,7 @@
 EMPTY = None
 
 
-def make_board(num_columns=7, num_rows=6):
+def make_board(num_rows=6, num_columns=7):
     board = []
 
     for _ in range(num_rows):
@@ -32,8 +32,7 @@ def drop_disc(board, column, disc):
     while not location_empty(board, row, column):
         row -= 1
 
-    if row >= 0:
-        place_disc(board, row, column, disc)
+    place_disc(board, row, column, disc)
 
     return row
         

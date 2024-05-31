@@ -19,8 +19,8 @@ class Config:
     FPS = 60
 
     # Board size (Not flexible yet)
-    NUM_COLUMNS = 7
     NUM_ROWS = 6
+    NUM_COLUMNS = 7
 
     # How many in a row (Not used yet)
     STREAK_LENGTH = 4
@@ -50,7 +50,7 @@ class Config:
 # Main game class 
 class Game:
 
-    def __init__(self, columns=Config.NUM_COLUMNS, rows=Config.NUM_ROWS, streak=Config.STREAK_LENGTH):
+    def __init__(self, rows=Config.NUM_ROWS, columns=Config.NUM_COLUMNS, streak=Config.STREAK_LENGTH):
         pygame.mixer.pre_init()
         pygame.init()
 
@@ -58,8 +58,8 @@ class Game:
         pygame.display.set_caption(Config.CAPTION)
         self.clock = pygame.time.Clock()
 
-        self.columns = columns
         self.rows = rows
+        self.columns = columns
         self.streak = streak
 
         self.running = True
@@ -75,7 +75,7 @@ class Game:
         self.FONT_LG = pygame.font.Font(Config.FONT_FAMILY_LARGE, Config.FONT_SIZE_LARGE)
     
     def new_game(self):
-        self.board = functions.make_board(self.columns, self.rows)
+        self.board = functions.make_board(self.rows, self.columns)
         self.turn = 0
 
     def show_start_screen(self):
