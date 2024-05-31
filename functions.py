@@ -14,12 +14,17 @@ def make_board(num_rows=6, num_columns=7):
     return board
 
 
-def place_disc(board, row, column, disc):
-    board[row][column] = disc
+def location_is_valid(board, row, column):
+    return 0 <= row < len(board) and 0 <= column < len(board[0])
 
-   
+
 def location_empty(board, row, column):
     return board[row][column] == EMPTY
+
+
+def place_disc(board, row, column, disc):
+    if location_is_valid(board, row, column):
+        board[row][column] = disc
 
 
 def column_available(board, column):

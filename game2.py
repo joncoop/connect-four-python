@@ -77,6 +77,8 @@ class Game:
     def new_game(self):
         self.board = functions.make_board(self.rows, self.columns)
         self.turn = 0
+        name = Config.DISCS[self.turn]
+        self.message = f"Which column, {name}?"
 
     def show_start_screen(self):
         title_text = self.FONT_MD.render('Connect', True, pygame.Color('white'))
@@ -125,20 +127,14 @@ class Game:
             self.scene = Config.PLAYING
 
     def get_drop_column(self, event):
-        column = -1
-
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
 
             if y < Config.SCREEN_HEIGHT - 100: # out of status area
                 column = x // 100
-
-        if event.type == pygame.KEYDOWN:
-            if pygame.K_1 <= event.key <= pygame.K_7:
-                column = event.key - pygame.K_1
             
-        if 0 <= column < len(self.board[0]) and functions.column_available(self.board, column):
-            return column
+            if functions.column_available(self.board, column):
+                return column
                     
         return None
     
@@ -157,6 +153,8 @@ class Game:
                 self.scene = Config.END
             else:
                 self.turn = (self.turn + 1) % 2
+                name = Config.DISCS[self.turn]
+                self.message = f"Which column, {name}?"
     
     def handle_end_scene(self, event):
         if event.type == pygame.KEYDOWN:
@@ -180,10 +178,8 @@ class Game:
                 self.handle_end_scene(event)
 
     def update(self):
-        if self.scene == Config.PLAYING:
-            name = Config.DISCS[self.turn]
-            self.message = f"Which column, {name}?"
-    
+        pass     
+
     def render(self):
         self.screen.fill(Config.BG_COLOR)
 
