@@ -12,6 +12,28 @@ def do_tests():
     print_2d_array(board)
     print()
 
+    print('Row is valid')
+    print(functions.row_is_valid(board, 0))
+    print(functions.row_is_valid(board, 3))
+    print(functions.row_is_valid(board, 6))
+    print(functions.row_is_valid(board, -1))
+    print(functions.row_is_valid(board, 7))
+    print()
+    
+    print('Column is valid')
+    print(functions.column_is_valid(board, 0))
+    print(functions.column_is_valid(board, 3))
+    print(functions.column_is_valid(board, 5))
+    print(functions.column_is_valid(board, -1))
+    print(functions.column_is_valid(board, 6))
+    print()
+    
+    print('Location is valid')
+    print(functions.location_is_valid(board, 0, 3))
+    print(functions.location_is_valid(board, 3, 5))
+    print(functions.location_is_valid(board, 2, 11))
+    print()
+    
     print('Place disc')
     print(functions.place_disc(board, 5, 2, 1))
     print(functions.place_disc(board, 12, 2, 1))
@@ -52,13 +74,14 @@ def do_tests():
     print(functions.column_available(board, 0))
     print(functions.column_available(board, 1))
     print(functions.column_available(board, 2))
+    print(functions.column_available(board, 9))
     print()
-    
 
     print('Drop disc')    
     print(functions.drop_disc(board, 0, 2))
     print(functions.drop_disc(board, 5, 2))
     print(functions.drop_disc(board, 1, 1))
+    print(functions.drop_disc(board, 1, 8))
     print_2d_array(board)
     print()
     

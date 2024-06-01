@@ -62,7 +62,7 @@ def has_streak(sequence, value, length):
 
     for i in range(len(sequence)):
         chunk = sequence[i: i + length]
-        if chunk == streak and EMPTY not in chunk:
+        if chunk == streak:
             return True
             
     return False
@@ -115,7 +115,7 @@ def get_right_diagonal(board, row, column):
 def check_win(board, row, column, streak_length=4):
     disc = board[row][column]
 
-    if disc == EMPTY:
+    if disc == EMPTY: # here's the fix
         return False
 
     horizontal = get_row(board, row)
