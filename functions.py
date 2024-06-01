@@ -1,6 +1,6 @@
 # Functions for a Connect 4 game
 
-#EMPTY = 0
+#EMPTY = 0 ''' easier to see columns when running tests '''
 EMPTY = None
 
 
@@ -26,11 +26,12 @@ def location_is_valid(board, row, column):
     return row_is_valid(board, row) and column_is_valid(board, column)
 
 
-def location_empty(board, row, column):
+def location_is_empty(board, row, column):
     return board[row][column] == EMPTY
 
 
 def place_disc(board, row, column, disc):
+    # Choosing not to check for empty, function could be useful in other games
     if location_is_valid(board, row, column):
         board[row][column] = disc
 
@@ -40,7 +41,7 @@ def place_disc(board, row, column, disc):
 
 
 def column_available(board, column):
-    return column_is_valid(board, column) and location_empty(board, 0, column)
+    return column_is_valid(board, column) and location_is_empty(board, 0, column)
 
    
 def drop_disc(board, column, disc):
@@ -49,7 +50,7 @@ def drop_disc(board, column, disc):
     
     row = len(board) - 1
     
-    while not location_empty(board, row, column):
+    while not location_is_empty(board, row, column):
         row -= 1
 
     place_disc(board, row, column, disc)
@@ -112,7 +113,7 @@ def get_right_diagonal(board, row, column):
     return diagonal
 
 
-def check_win(board, row, column, streak_length=4):
+def win_at_location(board, row, column, streak_length=4):
     disc = board[row][column]
 
     if disc == EMPTY: # here's the fix
@@ -131,7 +132,7 @@ def check_win(board, row, column, streak_length=4):
     return horizontal_win or vertical_win or left_diagonal_win or right_diagonal_win
 
 
-def board_full(board):
+def board_is_full(board):
     num_columns = len(board[0])
 
     for column in range(num_columns):

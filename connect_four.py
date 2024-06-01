@@ -102,10 +102,10 @@ def play():
         print()
         display_board(board)
 
-        if functions.check_win(board, row, column, STREAK_LENGTH):
+        if functions.win_at_location(board, row, column, STREAK_LENGTH):
             result = f'{current_disc} wins!'
             playing = False
-        elif functions.board_full(board):
+        elif functions.board_is_full(board):
             result = "It's a tie."
             playing = False
         else:

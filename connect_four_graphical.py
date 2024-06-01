@@ -145,10 +145,10 @@ class Game:
                 current_disc = Config.DISCS[self.turn]
                 row = functions.drop_disc(self.board, column, current_disc)
 
-                if functions.check_win(self.board, row, column, self.streak):
+                if functions.win_at_location(self.board, row, column, self.streak):
                     self.message = f"{current_disc} wins! Play again? (y/n)"
                     self.scene = Config.END
-                elif functions.board_full(self.board):
+                elif functions.board_is_full(self.board):
                     self.message = "It's a tie. Play again? (y/n)"
                     self.scene = Config.END
                 else:

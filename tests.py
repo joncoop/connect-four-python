@@ -66,8 +66,8 @@ def do_tests():
     print()
     
     print('Location empty')
-    print(functions.location_empty(board, 0, 0))
-    print(functions.location_empty(board, 3, 1))
+    print(functions.location_is_empty(board, 0, 0))
+    print(functions.location_is_empty(board, 3, 1))
     print()
     
     print('Column available')    
@@ -126,20 +126,20 @@ def do_tests():
     print(functions.get_right_diagonal(board, 2, 3))
     print()
 
-    print('Check win')
-    print(functions.check_win(board, 5, 2))
-    print(functions.check_win(board, 4, 6))
-    print(functions.check_win(board, 3, 3))
-    print(functions.check_win(board, 3, 2))
-    print(functions.check_win(board, 3, 1))
-    print(functions.check_win(board, 4, 5)) # weird, but easy to fix
+    print('Win at location')
+    print(functions.win_at_location(board, 5, 2))
+    print(functions.win_at_location(board, 4, 6))
+    print(functions.win_at_location(board, 3, 3))
+    print(functions.win_at_location(board, 3, 2))
+    print(functions.win_at_location(board, 3, 1))
+    print(functions.win_at_location(board, 4, 5)) # weird, but easy to fix
     print()
     
-    print('Check board full')
+    print('Board is full')
     full = [[1, 1, 2], [1, 1, 2], [2, 1, 2]]
     not_full = [[1, functions.EMPTY, functions.EMPTY], [1, 1, 2], [2, 1, 2]]
-    print(functions.board_full(full))
-    print(functions.board_full(not_full))
+    print(functions.board_is_full(full))
+    print(functions.board_is_full(not_full))
 
 
 if __name__ == '__main__':
