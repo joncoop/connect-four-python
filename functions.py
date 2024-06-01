@@ -50,7 +50,7 @@ def has_streak(sequence, value, length):
 
     for i in range(len(sequence)):
         chunk = sequence[i: i + length]
-        if chunk == streak:
+        if chunk == streak and EMPTY not in chunk:
             return True
             
     return False
