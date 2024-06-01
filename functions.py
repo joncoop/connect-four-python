@@ -14,8 +14,16 @@ def make_board(num_rows=6, num_columns=7):
     return board
 
 
+def row_is_valid(board, row):
+    return 0 <= row < len(board)
+
+
+def column_is_valid(board, column):
+    return 0 <= column < len(board[0])
+
+
 def location_is_valid(board, row, column):
-    return 0 <= row < len(board) and 0 <= column < len(board[0])
+    return row_is_valid(board, row) and column_is_valid(board, column)
 
 
 def location_empty(board, row, column):
@@ -26,9 +34,13 @@ def place_disc(board, row, column, disc):
     if location_is_valid(board, row, column):
         board[row][column] = disc
 
+        return True
+    
+    return False
+
 
 def column_available(board, column):
-    return location_empty(board, 0, column)
+    return column_is_valid(board, column) and location_empty(board, 0, column)
 
    
 def drop_disc(board, column, disc):

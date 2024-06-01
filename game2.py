@@ -127,34 +127,34 @@ class Game:
             self.scene = Config.PLAYING
 
     def get_drop_column(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            x, y = pygame.mouse.get_pos()
+        x, y = pygame.mouse.get_pos()
 
-            if y < Config.SCREEN_HEIGHT - 100: # out of status area
-                column = x // 100
-            
+        if y < Config.SCREEN_HEIGHT - 100: # out of status area
+            column = x // 100 # 100 is column width
+        
             if functions.column_available(self.board, column):
                 return column
                     
-        return None
+        return -1
     
     def handle_playing_scene(self, event):
-        column = self.get_drop_column(event)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            column = self.get_drop_column(event)
 
-        if column is not None:
-            current_disc = Config.DISCS[self.turn]
-            row = functions.drop_disc(self.board, column, current_disc)
+            if column != -1:
+                current_disc = Config.DISCS[self.turn]
+                row = functions.drop_disc(self.board, column, current_disc)
 
-            if functions.check_win(self.board, row, column, self.streak):
-                self.message = f"{current_disc} wins! Play again? (y/n)"
-                self.scene = Config.END
-            elif functions.board_full(self.board):
-                self.message = "It's a tie. Play again? (y/n)"
-                self.scene = Config.END
-            else:
-                self.turn = (self.turn + 1) % 2
-                name = Config.DISCS[self.turn]
-                self.message = f"Which column, {name}?"
+                if functions.check_win(self.board, row, column, self.streak):
+                    self.message = f"{current_disc} wins! Play again? (y/n)"
+                    self.scene = Config.END
+                elif functions.board_full(self.board):
+                    self.message = "It's a tie. Play again? (y/n)"
+                    self.scene = Config.END
+                else:
+                    self.turn = (self.turn + 1) % 2
+                    name = Config.DISCS[self.turn]
+                    self.message = f"Which column, {name}?"
     
     def handle_end_scene(self, event):
         if event.type == pygame.KEYDOWN:

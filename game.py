@@ -81,7 +81,7 @@ def get_drop_column(board, player):
         if column.isdigit():
             column = int(column) - 1
 
-            if 0 <= column < len(board[0]) and functions.column_available(board, column):
+            if functions.column_available(board, column):
                 return column
         
         print('Invalid selection.')

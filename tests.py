@@ -13,7 +13,9 @@ def do_tests():
     print()
 
     print('Place disc')
-    functions.place_disc(board, 5, 2, 1)
+    print(functions.place_disc(board, 5, 2, 1))
+    print(functions.place_disc(board, 12, 2, 1))
+    print(functions.place_disc(board, 5, -4, 1))
     print_2d_array(board)
     print()
 
