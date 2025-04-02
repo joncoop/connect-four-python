@@ -3,34 +3,49 @@ import functions
 
 # Board size (Up to 99x99)
 NUM_ROWS = 6
-NUM_COLUMNS = 7
+NUM_COLS = 20
 
-# How many in a row
+# Win condition
 STREAK_LENGTH = 4
 
-# Disc symbols
-DISCS = 'X', 'O'
-BLANK = '-'
+# Token symbols
+TOKENS = {
+    0: "-",  # Empty
+    1: "X",  # Player 1
+    2: "O"   # Player 2
+}
 
 
 def show_start_screen():
-    print('******************************')
-    print('*                            *')
-    print('*         CONNECT 4          *')
-    print('*                            *')
-    print('*    Press ENTER to play.    *')
-    print('*                            *')
-    print('******************************')
+    """
+    Displays the start screen and prompts the user to press Enter to begin the game.
+    """
+    print("******************************")
+    print("*                            *")
+    print(f"*         CONNECT {STREAK_LENGTH}          *")
+    print("*                            *")
+    print("*    Press ENTER to play.    *")
+    print("*                            *")
+    print("******************************")
     input()
 
 
 def show_end_screen():
-    print('Thanks for playing!')
+    """
+    Displays a message thanking the player for playing the game.
+    """
+    print("Thanks for playing!")
 
 
 def play_again():
+    """
+    Asks the player if they would like to play another game.
+    
+    Returns:
+        bool: True if the player chooses to play again, False otherwise.
+    """
     while True:
-        answer = input('Would you like to play again? (y/n)? ')
+        answer = input("Would you like to play again? (y/n) ")
         answer = answer.lower().strip()
         
         if answer in ['y', 'yes']:
@@ -40,93 +55,114 @@ def play_again():
 
 
 def display_board(board):
+    """
+    Displays the current state of the game board.
+    
+    Args:
+        board (list): The game board represented as a 2D list.
+    """
+    column_gap = " "
+    num_cols = len(board[0])
+
     for row in board:
-        for value in row:
-            if value in DISCS:
-                print(value, end=' ')
-            else:
-                print(BLANK, end=' ')
+        print(column_gap.join(TOKENS[value] for value in row))
 
-        print()
+    board_width = num_cols + (num_cols - 1) * len(column_gap)
+    print('—' * board_width)
 
-    print('—' * (2 * len(board[0]) - 1))
-
-    display_column_numbers(board)
-
-
-def display_column_numbers(board):
-    width = len(board[0])
-
-    for i in range(1, width + 1):
-        if i < 10:
-            print(f'{i}', end=' ')
-        else:
-            print(f'{i // 10}', end=' ')
+    # Write 1st digit of column number below each column
+    for i in range(1, num_cols + 1):
+        first_digit = i if i < 10 else i // 10
+        print(first_digit, end=column_gap)
     print()
 
-    if width > 9:
-        for i in range(1, width + 1):
-            if i < 10:
-                print(f' ', end=' ')
-            else:
-                print(f'{i % 10}', end=' ')
+    # Write 2nd digit of column number on next line (only if 2-digit column numbers exist)
+    if num_cols > 9:
+        for i in range(1, num_cols + 1):
+            second_digit = " " if i < 10 else i % 10
+            print(second_digit, end=column_gap)
         print()
 
 
 def get_drop_column(board, player):
+    """
+    Prompts the player to select a column to drop their token.
+    
+    Args:
+        board (list): The game board represented as a 2D list.
+        player (int): The player number (1 or 2).
+    
+    Returns:
+        int: The column selected by the player.
+    """
     while True:
-        column = input(f'Where to drop, {player}? ')
-        column = column.strip()
+        column = input(f"{TOKENS[player]}, choose a column? ").strip()
         
-        if column.isdigit():
-            column = int(column) - 1
+        if not column.isdigit():
+            print("Enter a numeric value.")
+            continue
+        
+        column = int(column) - 1  # Board uses zero-based index
 
-            if functions.column_available(board, column):
-                return column
+        if not functions.column_is_valid(board, column):
+            print("Invalid column number.")
+            continue
         
-        print('Invalid selection.')
+        if not functions.column_available(board, column):
+            print("Column not available.")
+            continue
+
+        return column
 
 
 def play():
-    playing = True
-    turn = 0
+    """
+    Manages the gameplay loop for Connect 4. Alternates players, accepts moves, 
+    checks for wins, and displays the game board. Ends when a player wins 
+    or the board is full (tie).
+    """
+    result = None
+    current_player = 1
 
-    board = functions.make_board(NUM_ROWS, NUM_COLUMNS)
+    board = functions.make_board(NUM_ROWS, NUM_COLS)
     display_board(board)
 
-    while playing:
-        current_disc = DISCS[turn]
-        column = get_drop_column(board, current_disc)
-        row = functions.drop_disc(board, column, current_disc)
+    while result is None:
+        column = get_drop_column(board, current_player)
+        row = functions.drop_token(board, column, current_player)
 
         print()
         display_board(board)
 
-        if functions.win_at_location(board, row, column, STREAK_LENGTH):
-            result = f'{current_disc} wins!'
-            playing = False
-        elif functions.board_is_full(board):
+        if functions.check_win(board, row, column, STREAK_LENGTH):
+            result = f"{TOKENS[current_player]} wins!"
+        elif functions.board_full(board):
             result = "It's a tie."
-            playing = False
         else:
-            turn = (turn + 1) % 2
+            current_player = 1 if current_player == 2 else 2
     
-    print(f'\n{result}')
+    print(f"\n{result}\n")
 
 
 def main():
+    """
+    Manages the game loop, calling the necessary functions to start and play the game,
+    and asking the player if they want to play again after the game ends.
+    """
     show_start_screen()
 
     running = True
 
     while running:
         play()
-        print()
         running = play_again()
+
+        if running:
+            print("\nNew game...")
         print()
 
     show_end_screen()
 
 
-if  __name__ == '__main__':
+if  __name__ == "__main__":
     main()
