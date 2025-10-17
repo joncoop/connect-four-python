@@ -1,6 +1,6 @@
 # Functions for a Connect 4 game
 
-def make_board(num_rows=7, num_cols=6):
+def make_board(num_rows=6, num_cols=7):
     """
     Creates a new game board of the specified dimensions with all slots empty.
     
@@ -288,3 +288,4 @@ def board_full(board):
                 return False
 
     return True
+
