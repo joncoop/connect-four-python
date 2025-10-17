@@ -3,7 +3,7 @@ import functions
 
 # Board size (Up to 99x99)
 NUM_ROWS = 6
-NUM_COLS = 20
+NUM_COLS = 7
 
 # Win condition
 STREAK_LENGTH = 4
@@ -32,7 +32,7 @@ def show_start_screen():
 
 def show_end_screen():
     """
-    Displays a message thanking the player for playing the game.
+    Displays an end screen.
     """
     print("Thanks for playing!")
 
@@ -115,6 +115,29 @@ def get_drop_column(board, player):
         return column
 
 
+def get_result(board, row, column, current_player):
+    """
+    Determines if the game has been won or ended in a tie.
+
+    Args:
+        board (list): The game board represented as a 2D list.
+        row (int): The row index of the last token placed.
+        column (int): The column index of the last token placed.
+        current_player (int): The player who made the last move.
+
+    Returns:
+        str | None: A message describing the game result, or None if play should continue.
+    """
+    result = None
+
+    if functions.check_win(board, row, column, ):
+        result = f"{TOKENS[current_player]} wins!"
+    elif functions.board_full(board):
+        result = "It's a tie."
+
+    return result
+
+
 def play():
     """
     Manages the gameplay loop for Connect 4. Alternates players, accepts moves, 
@@ -133,12 +156,9 @@ def play():
 
         print()
         display_board(board)
-
-        if functions.check_win(board, row, column, STREAK_LENGTH):
-            result = f"{TOKENS[current_player]} wins!"
-        elif functions.board_full(board):
-            result = "It's a tie."
-        else:
+        result = get_result(board, row, column, current_player)
+        
+        if result is None:
             current_player = 1 if current_player == 2 else 2
     
     print(f"\n{result}\n")
@@ -164,5 +184,5 @@ def main():
     show_end_screen()
 
 
-if  __name__ == "__main__":
+if __name__ == "__main__":
     main()
